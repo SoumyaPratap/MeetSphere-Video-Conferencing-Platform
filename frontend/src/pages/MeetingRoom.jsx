@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import socket from "../socket";
 import "./MeetingRoom.css";
+import API from "../services/api";
 
 function MeetingRoom() {
   const { meetingId } = useParams();
@@ -14,6 +15,8 @@ function MeetingRoom() {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
 const [chatInput, setChatInput] = useState("");
+ const [aiQuestion, setAiQuestion] = useState("");
+const [aiAnswer, setAiAnswer] = useState("");
   const [isMuted, setIsMuted] = useState(false);
   const [isCameraOff, setIsCameraOff] = useState(false);
   const [isSharingScreen, setIsSharingScreen] = useState(false);
@@ -511,6 +514,27 @@ const sendMessage = () => {
   setChatInput("");
 };
 
+const askAI = async () => {
+  try {
+    const res = await API.post(
+      "/ai/ask",
+      {
+        question: aiQuestion,
+      }
+    );
+
+    setAiAnswer(
+      res.data.answer
+    );
+  } catch (error) {
+    console.log(error);
+
+    setAiAnswer(
+      "AI Error"
+    );
+  }
+};
+
   const leaveMeeting = () => {
   console.log("Leaving Meeting...");
 
@@ -577,6 +601,7 @@ const sendMessage = () => {
       <hr />
 
 <div className="chat-box">
+ 
   <h3>💬 MeetSphere Chat</h3>
 
   <div className="chat-messages">
@@ -610,10 +635,42 @@ const sendMessage = () => {
       Send
     </button>
   </div>
+
+  </div>
+
+<hr />
+
+<div className="ai-box">
+  <h3>🤖 AI Assistant</h3>
+
+  <input
+    type="text"
+    placeholder="Ask AI..."
+    value={aiQuestion}
+    onChange={(e) =>
+      setAiQuestion(
+        e.target.value
+      )
+    }
+  />
+
+  <button onClick={askAI}>
+    Ask AI
+  </button>
+
+  {aiAnswer && (
+    <div>
+      <h4>Answer:</h4>
+
+      <p>{aiAnswer}</p>
+    </div>
+  )}
 </div>
 
 <hr />
-      <hr />
+<hr />
+
+<div className="video-section"></div>
 
       <div className="video-section">
 

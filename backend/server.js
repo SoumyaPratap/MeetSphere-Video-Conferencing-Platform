@@ -9,15 +9,27 @@ const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/auth");
 const meetingRoutes = require("./routes/meeting");
+const aiRoutes = require("./routes/aiRoute");
+
 
 const app = express();
 const server = http.createServer(app);
 
 connectDB();
 
+// app.use(
+//   cors({
+//     origin: process.env.FRONTEND_URL,
+//     credentials: true,
+//   })
+// );
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: [
+      "http://localhost:5173",
+      "https://meetsphere-video-conferencing-platf.vercel.app"
+    ],
     credentials: true,
   })
 );
@@ -26,6 +38,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/meeting", meetingRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.get("/", (req, res) => {
   res.send("MeetSphere Backend Running");
